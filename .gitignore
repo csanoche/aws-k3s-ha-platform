@@ -1,3 +1,5 @@
+############ TERRAFORM ############
+
 # Local .terraform directories
 .terraform/
 
@@ -42,3 +44,17 @@ terraform.rc
 # Optional: ignore plan files saved before destroying Terraform configuration
 # Uncomment the line below if you want to ignore planout files.
 # planout
+
+############ ANSIBLE ############
+
+# Ansible retry files
+*.retry
+
+# Ansible inventory with real IPs
+ansible/inventory/hosts
+ansible/inventory/*.ini
+ansible/inventory/*.yaml
+
+# Ansible vault password file
+.vault_pass
+.vault_password
