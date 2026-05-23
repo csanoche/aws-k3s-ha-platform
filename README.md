@@ -27,6 +27,7 @@ Provisioning and configuring a system of virtual machines to provide a highly av
 | Networking | Subnet | Subnetwork for node placement |
 | Networking | Route Table | Routes traffic within the VPC and to the internet |
 | Networking | Internet Gateway | Enables outbound internet access for public subnets |
+| Networking | NAT Gateway | Outbound internet for private VMs during provisioning |
 | Networking | Security Group | Controls inbound/outbound traffic per node group |
 | Security | Key Pair | SSH access to EC2 instances |
 | Storage | S3 | Terraform remote state storage |
@@ -94,10 +95,16 @@ Before spinning up this infrastructure, the following MUST be already set-up
 | etcd and Patroni co-located on PostgreSQL nodes | Patroni's reference architecture places etcd on the same nodes. A separate etcd cluster would add 3 instances with no advantage for this set-up. |
 | Amazon Linux 2023 | Current AWS-supported standard and integrates natively with AWS services. Replaces AL2 (EOL). |
 | Ansible roles over flat playbooks | Each component (haproxy, patroni, k3s, etc.) has its own tasks, templates, handlers, and vars. Roles provide structure and separation of concerns across a multi-node deployment. |
+|Bastion Host Pattern| A Bastion Host will be assigned in the public subnet and will serve as a jump server from the internet into the infrastructure. This adds a layer of protection and lessens the surface of attack.
+|NAT Gateway| Having a NAT gateway gives access to VMs in the private subnet. Although it is a paid service, it will be minimal with a destroy-after-validation workflow |
+|Availability Zone| This project aims to demonstrate Infrastructure as Code. To keep configuration simple, everything will be stored in a single AZ (ap-southeast-1)|
 
 ## Key Learnings
 -
 -
+
+## Recommendations
+- for a true highly available set-up, nodes must be assigned in different availability zones
 
 # Commit Message Convention
 
