@@ -6,6 +6,37 @@ Provisioning and configuring a system of virtual machines to provide a highly av
 
 ## Architecture
 
+**Subnet Layout**
+|Subnet|Nodes|Internet Access|
+|---|---|---|
+|Public|Bastion Host, NAT Gateway|Direct via Internet Gateway|
+|Private|All other 11 nodes|Outbound NAT Gateway|
+
+**Subnet CIDR**
+|Subnet|Range|
+|---|---|
+|VPC|10.16.16.0/24|
+|Public|10.16.16.0/26|
+|Private|10.16.16.64/26|
+|Bastion|Public Subnet|
+|NAT Gateway|Public Subnet|
+|All other nodes|Private Subnet|
+
+**Availability Zone**
+|Node|Accessibility Zone|
+|---|---|
+|All nodes|ap-southeast-1|
+
+**Security Group Rules**
+|Node|Inbound|Source|
+|---|---|---|
+|Bastion|22|0.0.0.0/0|
+|HAproxy|6443|Private Subnet|
+|k3s Master||HAproxy SG, Masters SG|
+|k3s Worker||k3s Master SG|
+|Postgres||k3s Master SG|
+|All private nodes|22|Bastion|
+
 ![architecture diagram placeholder](docu/image.png)
 
 **Stack:**
@@ -27,7 +58,7 @@ Provisioning and configuring a system of virtual machines to provide a highly av
 | Networking | Subnet | Subnetwork for node placement |
 | Networking | Route Table | Routes traffic within the VPC and to the internet |
 | Networking | Internet Gateway | Enables outbound internet access for public subnets |
-| Networking | NAT Gateway | Outbound internet for private VMs during provisioning |
+| Networking | NAT Gateway | Outbound internet for nodes in the private subnet during provisioning |
 | Networking | Security Group | Controls inbound/outbound traffic per node group |
 | Security | Key Pair | SSH access to EC2 instances |
 | Storage | S3 | Terraform remote state storage |
@@ -96,7 +127,7 @@ Before spinning up this infrastructure, the following MUST be already set-up
 | Amazon Linux 2023 | Current AWS-supported standard and integrates natively with AWS services. Replaces AL2 (EOL). |
 | Ansible roles over flat playbooks | Each component (haproxy, patroni, k3s, etc.) has its own tasks, templates, handlers, and vars. Roles provide structure and separation of concerns across a multi-node deployment. |
 |Bastion Host Pattern| A Bastion Host will be assigned in the public subnet and will serve as a jump server from the internet into the infrastructure. This adds a layer of protection and lessens the surface of attack.
-|NAT Gateway| Having a NAT gateway gives access to VMs in the private subnet. Although it is a paid service, it will be minimal with a destroy-after-validation workflow |
+|NAT Gateway| Having a NAT gateway gives access to nodes in the private subnet. Although it is a paid service, it will be minimal with a destroy-after-validation workflow |
 |Availability Zone| This project aims to demonstrate Infrastructure as Code. To keep configuration simple, everything will be stored in a single AZ (ap-southeast-1)|
 
 ## Key Learnings
