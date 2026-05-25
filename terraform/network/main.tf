@@ -55,3 +55,18 @@ resource "aws_internet_gateway" "main_igw" {
     }
   )  
 }
+
+resource "aws_nat_gateway" "main_nat" {
+  allocation_id = aws_eip.example.id
+  subnet_id     = aws_subnet.public.id
+
+  tags = merge(
+    local.common_tags,
+    {
+      Role = "network"
+    }
+  )
+
+  # To ensure proper ordering, here's an explicit dependency on the Internet Gateway for the VPC.
+  depends_on = [aws_internet_gateway.main_igw]
+}
