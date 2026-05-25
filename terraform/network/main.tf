@@ -18,7 +18,7 @@ resource "aws_vpc" "main" {
 # Create public subnet with public IP mapping enabled
 resource "aws_subnet" "public" {
   vpc_id = aws_vpc.main.id
-  cidr_block = "10.16.16.0/28"
+  cidr_block = "10.16.16.0/26"
   availability_zone = data.aws_availability_zones.available.names[0]
   map_public_ip_on_launch = true
   
@@ -33,8 +33,8 @@ resource "aws_subnet" "public" {
 # Create private subnet without public IP mapping
 resource "aws_subnet" "private" {
   vpc_id = aws_vpc.main.id
-  cidr_block = "10.16.16.16/28"
-  availability_zone = data.aws_availability_zones.available.names[1]
+  cidr_block = "10.16.16.64/26"
+  availability_zone = data.aws_availability_zones.available.names[0]
 
   tags = merge(
     local.common_tags,
@@ -56,6 +56,7 @@ resource "aws_internet_gateway" "main_igw" {
   )  
 }
 
+#Creat
 resource "aws_nat_gateway" "main_nat" {
   allocation_id = aws_eip.example.id
   subnet_id     = aws_subnet.public.id
@@ -70,3 +71,4 @@ resource "aws_nat_gateway" "main_nat" {
   # To ensure proper ordering, here's an explicit dependency on the Internet Gateway for the VPC.
   depends_on = [aws_internet_gateway.main_igw]
 }
+
