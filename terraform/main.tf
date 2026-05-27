@@ -14,8 +14,8 @@ provider "aws" {
   common_tags = local.common_tags
 }
 
-module "networking" {
-  source = "./networking"
+module "network" {
+  source = "./network"
   common_tags = local.common_tags
 }
 
