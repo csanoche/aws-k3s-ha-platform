@@ -44,6 +44,18 @@ resource "aws_internet_gateway" "main_igw" {
   )  
 }
 
+# Create an Elastic IP for the NAT Gateway
+resource "aws_eip" "nat_eip" {
+  domain = "vpc"
+
+  tags = merge(
+    var.common_tags,
+    {
+      Role = "network"
+    }
+  )
+}
+
 #Create NAT Gateway
 resource "aws_nat_gateway" "main_nat" {
   allocation_id = aws_eip.nat_eip.id
@@ -58,18 +70,6 @@ resource "aws_nat_gateway" "main_nat" {
 
   # To ensure proper ordering, here's an explicit dependency on the Internet Gateway for the VPC.
   depends_on = [aws_internet_gateway.main_igw]
-}
-
-# Create an Elastic IP for the NAT Gateway
-resource "aws_eip" "nat_eip" {
-  domain = "vpc"
-
-  tags = merge(
-    var.common_tags,
-    {
-      Role = "network"
-    }
-  )
 }
 
 resource "aws_route_table" "public_rt" {
