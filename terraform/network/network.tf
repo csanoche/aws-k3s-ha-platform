@@ -72,6 +72,7 @@ resource "aws_nat_gateway" "main_nat" {
   depends_on = [aws_internet_gateway.main_igw]
 }
 
+# Create route table for any subnet with default route to Internet Gateway
 resource "aws_route_table" "public_rt" {
   vpc_id = aws_vpc.main.id
 
@@ -88,6 +89,7 @@ resource "aws_route_table" "public_rt" {
   )
 }
 
+# Associate the public subnet with the public route table
 resource "aws_route_table_association" "public_assoc" {
   subnet_id = aws_subnet.public.id
   route_table_id = aws_route_table.public_rt.id
@@ -109,6 +111,7 @@ resource "aws_subnet" "private" {
   )
 }
 
+# Create route table for any subnet with default route to NAT Gateway
 resource "aws_route_table" "nat_rt" {
   vpc_id = aws_vpc.main.id
 
@@ -125,6 +128,7 @@ resource "aws_route_table" "nat_rt" {
   )
 }
 
+# Associate the private subnet with the NAT route table
 resource "aws_route_table_association" "private_assoc" {
   subnet_id = aws_subnet.private.id
   route_table_id = aws_route_table.nat_rt.id
@@ -132,6 +136,7 @@ resource "aws_route_table_association" "private_assoc" {
 
 ### Security Groups ###
 
+# Create security group for bastion host
 resource "aws_security_group" "bastion_sg" {
   name        = "bastion_sg"
   description = "Allow SSH access and TLS traffic to the bastion host, allow all outbound traffic"
@@ -145,6 +150,7 @@ resource "aws_security_group" "bastion_sg" {
   )
 }
 
+# Allow SSH access from anywhere to the bastion host
 resource "aws_vpc_security_group_ingress_rule" "allow_ssh_ipv4" {
   security_group_id = aws_security_group.bastion_sg.id
   cidr_ipv4         = "0.0.0.0/0"
@@ -153,12 +159,14 @@ resource "aws_vpc_security_group_ingress_rule" "allow_ssh_ipv4" {
   to_port           = 22
 }
 
+# Allow all outbound traffic from the bastion host
 resource "aws_vpc_security_group_egress_rule" "bastion_allow_all_traffic_ipv4" {
   security_group_id = aws_security_group.bastion_sg.id
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "-1" # all ports
 }
 
+# Create security group for common use by all nodes in the private subnet
 resource "aws_security_group" "common_sg" {
   name        = "common_sg"
   description = "Allow SSH from bastion host, allow all outbound traffic"
@@ -172,6 +180,7 @@ resource "aws_security_group" "common_sg" {
   )
 }
 
+# Allow SSH access from bastion host to any node in the private subnet
 resource "aws_vpc_security_group_ingress_rule" "allow_ssh_from_bastion_ipv4" {
   security_group_id = aws_security_group.common_sg.id
   referenced_security_group_id = aws_security_group.bastion_sg.id
@@ -180,12 +189,14 @@ resource "aws_vpc_security_group_ingress_rule" "allow_ssh_from_bastion_ipv4" {
   to_port           = 22
 }
 
+# Allow all outbound traffic from any node in the private subnet
 resource "aws_vpc_security_group_egress_rule" "common_allow_all_traffic_ipv4" {
   security_group_id = aws_security_group.common_sg.id
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "-1" # all ports
 }
 
+# Create security group for HAproxy load balancer
 resource "aws_security_group" "haproxy_sg" {
   name        = "haproxy_sg"
   description = "Allow traffic from k3s nodes to HAproxy load balancer"
@@ -199,6 +210,7 @@ resource "aws_security_group" "haproxy_sg" {
   )
 }
 
+# Create security group for k3s master nodes
 resource "aws_security_group" "k3s_master_sg" {
   name        = "k3s_master_sg"
   description = "Allow traffic from k3s nodes and postgres to k3s master"
@@ -212,6 +224,7 @@ resource "aws_security_group" "k3s_master_sg" {
   )
 }
 
+# Create security group for k3s worker nodes
 resource "aws_security_group" "k3s_worker_sg" {
   name        = "k3s_worker_sg"
   description = "Allow traffic from k3s nodes to k3s worker"
@@ -225,6 +238,7 @@ resource "aws_security_group" "k3s_worker_sg" {
   )
 }
 
+# Create security group for postgres database
 resource "aws_security_group" "postgres_sg" {
   name        = "postgres_sg"
   description = "Allow traffic from k3s nodes to postgres database"
