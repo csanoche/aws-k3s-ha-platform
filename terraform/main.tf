@@ -11,7 +11,6 @@ terraform {
 # Configure the AWS Provider
 provider "aws" {
   region = "ap-southeast-1"
-  common_tags = local.common_tags
 }
 
 module "network" {

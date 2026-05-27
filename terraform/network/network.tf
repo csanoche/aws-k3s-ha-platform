@@ -8,7 +8,7 @@ resource "aws_vpc" "main" {
   cidr_block = "10.16.16.0/24"
 
   tags = merge(
-    local.common_tags,
+    var.common_tags,
     {
       Role = "network"
     }
@@ -23,7 +23,7 @@ resource "aws_subnet" "public" {
   map_public_ip_on_launch = true
   
   tags = merge(
-    local.common_tags,
+    var.common_tags,
     {
       Role = "network"
     }
@@ -37,7 +37,7 @@ resource "aws_subnet" "private" {
   availability_zone = data.aws_availability_zones.available.names[0]
 
   tags = merge(
-    local.common_tags,
+    var.common_tags,
     {
       Role = "network"
     }
@@ -49,7 +49,7 @@ resource "aws_internet_gateway" "main_igw" {
   vpc_id = aws_vpc.main.id
 
   tags = merge(
-    local.common_tags,
+    var.common_tags,
     {
       Role = "network"
     }
@@ -62,7 +62,7 @@ resource "aws_nat_gateway" "main_nat" {
   subnet_id     = aws_subnet.public.id
 
   tags = merge(
-    local.common_tags,
+    var.common_tags,
     {
       Role = "network"
     }
@@ -77,7 +77,7 @@ resource "aws_eip" "nat_eip" {
   domain = "vpc"
 
   tags = merge(
-    local.common_tags,
+    var.common_tags,
     {
       Role = "network"
     }
