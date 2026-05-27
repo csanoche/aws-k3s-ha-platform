@@ -15,6 +15,8 @@ resource "aws_vpc" "main" {
   )
 }
 
+### Public Network ###
+
 # Create public subnet with public IP mapping enabled
 resource "aws_subnet" "public" {
   vpc_id = aws_vpc.main.id
@@ -22,20 +24,6 @@ resource "aws_subnet" "public" {
   availability_zone = data.aws_availability_zones.available.names[0]
   map_public_ip_on_launch = true
   
-  tags = merge(
-    var.common_tags,
-    {
-      Role = "network"
-    }
-  )
-}
-
-# Create private subnet without public IP mapping
-resource "aws_subnet" "private" {
-  vpc_id = aws_vpc.main.id
-  cidr_block = "10.16.16.64/26"
-  availability_zone = data.aws_availability_zones.available.names[0]
-
   tags = merge(
     var.common_tags,
     {
@@ -103,4 +91,20 @@ resource "aws_route_table" "public_rt" {
 resource "aws_route_table_association" "public_assoc" {
   subnet_id = aws_subnet.public.id
   route_table_id = aws_route_table.public_rt.id
+}
+
+### Private Network ###
+
+# Create private subnet without public IP mapping
+resource "aws_subnet" "private" {
+  vpc_id = aws_vpc.main.id
+  cidr_block = "10.16.16.64/26"
+  availability_zone = data.aws_availability_zones.available.names[0]
+
+  tags = merge(
+    var.common_tags,
+    {
+      Role = "network"
+    }
+  )
 }
