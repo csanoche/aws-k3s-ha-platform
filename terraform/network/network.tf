@@ -178,3 +178,55 @@ resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4" {
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "-1" # all ports
 }
+
+resource "aws_security_group" "haproxy_sg" {
+  name        = "haproxy_sg"
+  description = "Allow traffic from k3s nodes to HAproxy load balancer"
+  vpc_id      = aws_vpc.main.id
+
+  tags = merge(
+    var.common_tags,
+    {
+      Role = "network"
+    }
+  )
+}
+
+resource "aws_security_group" "k3s_master_sg" {
+  name        = "k3s_master_sg"
+  description = "Allow traffic from k3s nodes and postgres to k3s master"
+  vpc_id      = aws_vpc.main.id
+
+  tags = merge(
+    var.common_tags,
+    {
+      Role = "network"
+    }
+  )
+}
+
+resource "aws_security_group" "k3s_worker_sg" {
+  name        = "k3s_worker_sg"
+  description = "Allow traffic from k3s nodes to k3s worker"
+  vpc_id      = aws_vpc.main.id
+
+  tags = merge(
+    var.common_tags,
+    {
+      Role = "network"
+    }
+  )
+}
+
+resource "aws_security_group" "postgres_sg" {
+  name        = "postgres_sg"
+  description = "Allow traffic from k3s nodes to postgres database"
+  vpc_id      = aws_vpc.main.id
+
+  tags = merge(
+    var.common_tags,
+    {
+      Role = "network"
+    }
+  )
+}
