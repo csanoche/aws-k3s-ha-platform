@@ -16,8 +16,7 @@ resource "aws_instance" "bastion_host" {
 
   subnet_id = aws_subnet.public.id
   vpc_security_group_ids = [ aws_security_group.bastion_sg.id ]
-  key_name = aws_key_pair.ansible_ssh_key.key_name
-
+  key_name = aws_key_pair.bastion_ssh_key.key_name
 
   tags = merge(
     var.common_tags,
