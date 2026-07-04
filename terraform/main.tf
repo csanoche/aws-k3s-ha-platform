@@ -17,8 +17,3 @@ module "network" {
   source = "./network"
   common_tags = local.common_tags
 }
-
-module "node" {
-  source = "./node"
-  common_tags = local.common_tags
-}
