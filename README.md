@@ -64,6 +64,16 @@ Provisioning and configuring a system of virtual machines to provide a highly av
 | Storage | S3 | Terraform remote state storage |
 | Database | DynamoDB | Terraform state locking |
 
+**AWS EC2 Instance Types**
+
+| Node | Count | Type |
+|---|---|---|
+| bastion | 1 | t3.micro |
+| haproxy | 2 | t3.micro |
+| k3s masters | 3 | t3.small |
+| k3s workers | 3 | t3.micro |
+| postgres | 3 | t3.micro |
+
 ## Project Structure
 ```
 .
@@ -129,6 +139,7 @@ Before spinning up this infrastructure, the following MUST be already set-up
 |Bastion Host Pattern| A Bastion Host will be assigned in the public subnet and will serve as a jump server from the internet into the infrastructure. This adds a layer of protection and lessens the surface of attack.
 |NAT Gateway| Having a NAT gateway gives access to nodes in the private subnet. Although it is a paid service, it will be minimal with a destroy-after-validation workflow |
 |Availability Zone| This project aims to demonstrate Infrastructure as Code. To keep configuration simple, everything will be stored in a single AZ (ap-southeast-1)|
+|Use node module for each node|DRY method for repetitive instances|
 
 ## Key Learnings
 -
