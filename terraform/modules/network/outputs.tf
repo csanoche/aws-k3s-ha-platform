@@ -30,7 +30,7 @@ output "postgres_sg_id" {
   value = aws_security_group.postgres_sg.id
 }
 
-output "k3s_haproxy_keepalived_sg_id" {
+output "haproxy_keepalived_sg_id" {
   value = aws_security_group.haproxy_keepalived_sg.id
 }
 
