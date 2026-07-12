@@ -251,3 +251,17 @@ resource "aws_security_group" "postgres_sg" {
     }
   )
 }
+
+# Create security group for haproxy_keepalived instance
+resource "aws_security_group" "haproxy_keepalived_sg" {
+  name        = "haproxy_keepalived_sg"
+  description = "Allow traffic from k3s nodes to HAproxy and Keepalived"
+  vpc_id      = aws_vpc.main.id
+
+  tags = merge(
+    var.common_tags,
+    {
+      Role = "network"
+    }
+  )
+}
